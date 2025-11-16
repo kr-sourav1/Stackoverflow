@@ -1,0 +1,11 @@
+com/stackoverflow/beta/service/CommentServiceTest.class
+com/stackoverflow/beta/service/QuestionServiceTest.class
+com/stackoverflow/beta/controller/VoteControllerTest.class
+com/stackoverflow/beta/controller/UserControllerTest.class
+com/stackoverflow/beta/service/UserServiceTest.class
+com/stackoverflow/beta/service/AnswerCastVoteTest.class
+com/stackoverflow/beta/service/AnswerServiceTest.class
+com/stackoverflow/beta/service/VoteServiceTest.class
+com/stackoverflow/beta/controller/StorageControllerTest.class
+com/stackoverflow/beta/controller/CommentControllerTest.class
+com/stackoverflow/beta/controller/AnswerControllerTest.class
