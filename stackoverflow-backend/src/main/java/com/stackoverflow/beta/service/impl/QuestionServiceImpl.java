@@ -3,6 +3,7 @@ package com.stackoverflow.beta.service.impl;
 import com.stackoverflow.beta.exception.ValidationException;
 import com.stackoverflow.beta.model.Question;
 import com.stackoverflow.beta.model.Tag;
+import com.stackoverflow.beta.model.dto.AnswerResponse;
 import com.stackoverflow.beta.model.dto.TopQuestionResponse;
 import com.stackoverflow.beta.model.request.QuestionCreateRequest;
 import com.stackoverflow.beta.repository.QuestionRepository;
@@ -10,11 +11,15 @@ import com.stackoverflow.beta.repository.QuestionRepository;
 import com.stackoverflow.beta.service.IQuestion;
 import com.stackoverflow.beta.utils.CustomPriorityQueue;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+//import java.awt.print.Pageable;
 import java.util.*;
 
 import static com.stackoverflow.beta.utils.SecurityUtils.getUserIdFromSecurityContext;
@@ -102,20 +107,32 @@ public class QuestionServiceImpl implements IQuestion {
                 .orElseThrow(() -> new ValidationException("Question not found", HttpStatus.NOT_FOUND)));
     }
 
-    @Override
-    public List<TopQuestionResponse> findTopQuestions(int count) {
-        log.info("Fetching top {} questions based on criteria votes", count);
-        List<Question> topQuestions = new ArrayList<>(voteCache);
+    //    public List<TopQuestionResponse> findTopQuestions(int count) {
+//        log.info("Fetching top {} questions based on criteria votes", count);
+//        List<Question> topQuestions = new ArrayList<>(voteCache);
+//
+//        return topQuestions.stream()
+//                .sorted((question1, question2) -> question2.getVotes() - question1.getVotes())
+//                .limit(count)
+//                .map(question -> new TopQuestionResponse(
+//                        question.getTitle(),
+//                        question.getVotes(),
+//                        question.getUserId()))
+//                .toList();
+//    }
 
-        return topQuestions.stream()
-                .sorted((question1, question2) -> question2.getVotes() - question1.getVotes())
-                .limit(count)
-                .map(question -> new TopQuestionResponse(
-                        question.getTitle(),
-                        question.getVotes(),
-                        question.getUserId()))
-                .toList();
+    @Override
+    public TopQuestionResponse findTopQuestions(int limit) {
+        // Get top N questions sorted by votes (or any field)
+        List<Question> questions = questionRepository.findTopQuestionsByVotes();
+        questions = questions.stream().limit(limit).toList();
+
+        return TopQuestionResponse.builder()
+                .questions(questions)
+                .build();
     }
+
+
 
     private void validateQuestionDoesNotExist(QuestionCreateRequest questionCreateRequest, int userId) {
         boolean exists = questionRepository.countByTitleContentAndUserId(

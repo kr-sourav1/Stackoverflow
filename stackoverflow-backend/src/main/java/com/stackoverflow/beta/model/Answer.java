@@ -27,7 +27,23 @@ public class Answer {
     @JoinColumn(name = "questionId")
     private Question question;
 
+    @Column(name = "user_id")
     private int userId;
+
+    // Answer.java
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+//    @Transient
+//    private String userName;
+//
+//    @JsonProperty("user")
+//    public String getUserJsonName() {
+//        return this.userName;
+//    }
+
+
     private String mediaUrl;
 
     //todo try to make variable private

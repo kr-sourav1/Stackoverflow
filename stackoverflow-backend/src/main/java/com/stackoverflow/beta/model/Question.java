@@ -1,8 +1,7 @@
 package com.stackoverflow.beta.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +20,7 @@ import java.util.Set;
 @Builder
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,13 @@ public class Question {
     @Size(min = 5, message = "The content must be at least 5 characters long")
     private String content;
     private int votes;
+    @Column(name = "user_id")
     private int userId;
+
+    // Question.java (add these imports where necessary)
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     @CreationTimestamp(source = SourceType.DB)
     private Date createdAt;
@@ -78,5 +84,4 @@ public class Question {
         this.content = content;
         this.userId = askedBy;
     }
-
 }

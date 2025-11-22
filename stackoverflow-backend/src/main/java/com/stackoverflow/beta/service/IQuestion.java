@@ -42,5 +42,5 @@ public interface IQuestion {
      * @param limit    the maximum number of top questions to retrieve
      * @return a list of {@link TopQuestionResponse} containing details of the top questions
      */
-    List<TopQuestionResponse> findTopQuestions(int limit);
+    TopQuestionResponse findTopQuestions(int limit);
 }

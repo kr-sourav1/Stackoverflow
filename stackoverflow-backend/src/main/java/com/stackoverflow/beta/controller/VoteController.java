@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/vote")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class VoteController {
     private final VoteService votingService;
 

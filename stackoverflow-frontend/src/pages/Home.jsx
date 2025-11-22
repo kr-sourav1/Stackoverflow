@@ -90,7 +90,7 @@ export default function Home(){
 						</div>
 					) : (
 						<div className="space-y-3">
-							{questions.map(item => <QuestionCard key={item.id} q={item} />)}
+							{questions.questions.map(item => <QuestionCard key={item.id} q={item} />)}
 						</div>
 					)}
 				</div>

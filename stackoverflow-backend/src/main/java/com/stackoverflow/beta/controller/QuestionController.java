@@ -71,7 +71,7 @@ public class QuestionController {
     @GetMapping("/top")
     public ResponseEntity<?> getTopQuestions(@RequestParam int count) {
         try {
-            List<TopQuestionResponse> topQuestions = questionService.findTopQuestions(count);
+            TopQuestionResponse topQuestions = questionService.findTopQuestions(count);
             return new ResponseEntity<>(topQuestions, HttpStatus.OK);
         } catch (Exception e) {
             return ExceptionHandler.handleException(e);

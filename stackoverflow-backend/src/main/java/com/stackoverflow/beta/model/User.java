@@ -27,6 +27,7 @@ public class User {
 
     private String name;
 
+    @JsonIgnore
     private String email;
 
     @JsonIgnore
@@ -38,6 +39,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonIgnore
     private Set<Role> roles;
 
     /**

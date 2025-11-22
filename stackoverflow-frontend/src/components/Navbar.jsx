@@ -59,7 +59,7 @@ return (
 <nav className="bg-white border-b">
 <div className="max-w-6xl mx-auto flex items-center justify-between p-3">
 <div className="flex items-center gap-4">
-<Link to="/" className="text-2xl font-bold text-indigo-600">StackLike</Link>
+<Link to="/" className="text-2xl font-bold text-indigo-600">StackOverFlow</Link>
 				<div className="relative">
 					<input
 						value={query}

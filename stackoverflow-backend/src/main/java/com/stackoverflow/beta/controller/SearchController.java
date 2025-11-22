@@ -3,6 +3,7 @@ package com.stackoverflow.beta.controller;
 import com.stackoverflow.beta.constant.Constants;
 import com.stackoverflow.beta.model.Question;
 import com.stackoverflow.beta.service.ISearch;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
  * Controller for handling search operations.
  */
 @RestController
+@Slf4j
 @RequestMapping("/search")
 @CrossOrigin(origins = "http://localhost:5173/")
 public class SearchController {
@@ -50,13 +52,14 @@ public class SearchController {
     // proper error message should appear on client
     // in case of blank string it shouldn't return anything
     @GetMapping(Constants.SEARCH_QUERY)
-    public ResponseEntity<List<Question>> searchQuery(@RequestParam("query") String query) {
+    public ResponseEntity<?> searchQuery(@RequestParam("query") String query) {
         try {
-            return new ResponseEntity<>(searchService.searchFromQuery(query.trim()), HttpStatus.OK);
+            List<Question> response = searchService.searchFromQuery(query.trim());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error occurred while searching ", e);
             return null;
         }
-
 
     }
 

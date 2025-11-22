@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { login } from '../api/api'
 
 export default function Login(){
 const [email, setEmail] = useState('')
@@ -8,14 +8,22 @@ const [password, setPassword] = useState('')
 const navigate = useNavigate()
 
 
-function submit(e){
-e.preventDefault()
-// Note: your backend does not require auth; this is a local mock to store a user in localStorage
-const user = { id: 1, name: email.split('@')[0], email }
-localStorage.setItem('user', JSON.stringify(user))
-navigate('/')
-}
+ async function submit(e) {
+    e.preventDefault();
 
+    try {
+      const response = await login({
+        username: email,
+        password: password
+      });
+
+      console.log("Login success:", response);
+      navigate('/');
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Invalid credentials");
+    }
+  }
 
 return (
 <div className="max-w-md mx-auto bg-white p-6 rounded shadow-sm">
