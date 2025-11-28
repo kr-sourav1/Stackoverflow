@@ -14,13 +14,13 @@ public class VoteService {
         this.voteFactory = voteFactory;
     }
 
-    public int upVote(PostType postType, int postId) {
+    public int upVote(PostType postType, int postId, int userId) {
         CastVote castVote = voteFactory.getVoteService(postType);
-        return castVote.upVote(postId);
+        return castVote.upVote(postId, userId);
     }
 
-    public int downVote(PostType postType, int postId) {
+    public int downVote(PostType postType, int postId, int userId) {
         CastVote castVote = voteFactory.getVoteService(postType);
-        return castVote.downVote(postId);
+        return castVote.downVote(postId, userId);
     }
 }

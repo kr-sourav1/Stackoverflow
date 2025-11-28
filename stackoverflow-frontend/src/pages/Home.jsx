@@ -83,7 +83,8 @@ export default function Home(){
 				</div>
 			) : (
 				<div className="w-full">
-					{questions.length === 0 ? (
+					{
+					questions.length === 0 ? (
 						<div className="text-center py-12 text-gray-600">
 							<p className="text-lg font-medium mb-2">No questions found</p>
 							<p className="text-sm">Try a different search or browse all questions</p>

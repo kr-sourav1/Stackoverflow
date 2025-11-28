@@ -30,35 +30,31 @@ public class VoteController {
      * @return the updated vote count after the upvote
      */
     @PostMapping("/upVote")
-    public ResponseEntity<?> upVote(@RequestParam PostType postType, @RequestParam int postId) {
+    public ResponseEntity<?> upVote(@RequestParam PostType postType,
+                                    @RequestParam int postId,
+                                    @RequestParam int userId) {
         try {
-            return new ResponseEntity<>(votingService.upVote(postType, postId), HttpStatus.OK);
+            int updatedVotes = votingService.upVote(postType, postId, userId);
+            return new ResponseEntity<>(updatedVotes, HttpStatus.OK);
         } catch (ValidationException e) {
-            return ResponseEntity.status(e.getStatus())
-                    .body(e.getMessage());
+            return ResponseEntity.status(e.getStatus()).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    /**
-     * Endpoint to downvote a post (either a question or an answer).
-     *
-     * @param postType - the type of post to vote for (question or answer)
-     * @param postId   - the ID of the post to be downvoted
-     * @return the updated vote count after the downvote
-     */
     @PostMapping("/downVote")
-    public ResponseEntity<?> downVote(@RequestParam PostType postType, @RequestParam int postId) {
+    public ResponseEntity<?> downVote(@RequestParam PostType postType,
+                                      @RequestParam int postId,
+                                      @RequestParam int userId) {
         try {
-            return new ResponseEntity<>(votingService.downVote(postType, postId), HttpStatus.OK);
+            int updatedVotes = votingService.downVote(postType, postId, userId);
+            return new ResponseEntity<>(updatedVotes, HttpStatus.OK);
         } catch (ValidationException e) {
-            return ResponseEntity.status(e.getStatus())
-                    .body(e.getMessage());
+            return ResponseEntity.status(e.getStatus()).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
 }

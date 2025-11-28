@@ -3,18 +3,19 @@ package com.stackoverflow.beta.service;
 public interface CastVote {
 
     /**
-     * Upvotes  and returns the updated vote count.
+     * Upvotes and returns the updated vote count.
      *
      * @param postId the ID of the answer/question to be upvoted
-     * @return the updated vote count
+     * @param userId the ID of the user who is voting
      */
-    public int upVote(int postId);
+    int upVote(int postId, int userId);
 
     /**
-     * Downvotes  and returns the updated vote count.
+     * Downvotes and returns the updated vote count.
      *
      * @param postId the ID of the answer/question to be downvoted
-     * @return the updated vote count
+     * @param userId the ID of the user who is voting
      */
-    public int downVote(int postId);
+    int downVote(int postId, int userId);
 }
+

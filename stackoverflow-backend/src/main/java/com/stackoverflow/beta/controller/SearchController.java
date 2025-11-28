@@ -2,6 +2,7 @@ package com.stackoverflow.beta.controller;
 
 import com.stackoverflow.beta.constant.Constants;
 import com.stackoverflow.beta.model.Question;
+import com.stackoverflow.beta.model.dto.QuestionResponse;
 import com.stackoverflow.beta.service.ISearch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,9 @@ public class SearchController {
     public ResponseEntity<?> searchQuery(@RequestParam("query") String query) {
         try {
             List<Question> response = searchService.searchFromQuery(query.trim());
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(QuestionResponse.builder()
+                    .questions(response)
+                    .build(), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error occurred while searching ", e);
             return null;

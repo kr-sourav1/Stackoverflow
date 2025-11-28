@@ -1,7 +1,10 @@
 package com.stackoverflow.beta.filter;
 
+import com.stackoverflow.beta.model.User;
 import com.stackoverflow.beta.model.dto.CustomUserDetails;
+import com.stackoverflow.beta.repository.UserRepository;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +16,9 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Use a secret key from properties for better security
     @Value("${jwt.secret}")
@@ -34,9 +40,13 @@ public class JwtUtil {
         String username = authentication.getName();
         int userId = getUserIdFromAuthentication(authentication);
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
+                .claim("name", user.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION)) // Set expiration
                 .signWith(SignatureAlgorithm.HS256, getSigningKey()) // Use a key for signing
@@ -76,6 +86,12 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractClaims(token).getSubject();
     }
+
+    //extract user name
+//    public String extractName(String token) {
+//        return extractClaims(token).get("name", String.class);
+//    }
+
 
     /**
      * Check if a token has expired.

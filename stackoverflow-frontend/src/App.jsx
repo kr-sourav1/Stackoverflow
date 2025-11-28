@@ -22,6 +22,8 @@ return (
 <Route path="/login" element={<Login />} />
 <Route path="/signup" element={<Signup />} />
 <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+<Route path="/question/findById/:id" element={<QuestionDetails />} />
+
 </Routes>
 </main>
 </div>

@@ -20,7 +20,8 @@ public class Answer {
 
     @Column(length = 3000)
     private String content;
-    private int votes;
+    @Column(nullable = false)
+    private int votes = 0;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,14 +35,6 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
-
-//    @Transient
-//    private String userName;
-//
-//    @JsonProperty("user")
-//    public String getUserJsonName() {
-//        return this.userName;
-//    }
 
 
     private String mediaUrl;

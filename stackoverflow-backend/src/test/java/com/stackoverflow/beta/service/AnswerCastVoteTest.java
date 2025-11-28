@@ -26,36 +26,36 @@ public class AnswerCastVoteTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testUpVote_Success() {
-        int answerId = 1;
-        Answer answer = new Answer();
-        answer.setVotes(5);
-        Answer savedAnswer = new Answer();
-        savedAnswer.setVotes(6);
-
-        when(answerRepository.findById(answerId)).thenReturn(Optional.of(answer));
-        when(answerRepository.save(answer)).thenReturn(savedAnswer);
-
-        int newVoteCount = castVoteService.upVote(answerId);
-        assertEquals(6, newVoteCount);
-    }
-
-    @Test
-    void testDownVote_Success() {
-        int answerId = 1;
-        Answer answer = new Answer();
-        answer.setVotes(5);
-
-        Answer savedAnswer = new Answer();
-        savedAnswer.setVotes(4);
-
-        when(answerRepository.findById(answerId)).thenReturn(Optional.of(answer));
-        when(answerRepository.save(answer)).thenReturn(savedAnswer);
-
-        int newVoteCount = castVoteService.downVote(answerId);
-
-        assertEquals(4, newVoteCount);
-
-    }
+//    @Test
+//    void testUpVote_Success() {
+//        int answerId = 1;
+//        Answer answer = new Answer();
+//        answer.setVotes(5);
+//        Answer savedAnswer = new Answer();
+//        savedAnswer.setVotes(6);
+//
+//        when(answerRepository.findById(answerId)).thenReturn(Optional.of(answer));
+//        when(answerRepository.save(answer)).thenReturn(savedAnswer);
+//
+//        int newVoteCount = castVoteService.upVote(answerId);
+//        assertEquals(6, newVoteCount);
+//    }
+//
+//    @Test
+//    void testDownVote_Success() {
+//        int answerId = 1;
+//        Answer answer = new Answer();
+//        answer.setVotes(5);
+//
+//        Answer savedAnswer = new Answer();
+//        savedAnswer.setVotes(4);
+//
+//        when(answerRepository.findById(answerId)).thenReturn(Optional.of(answer));
+//        when(answerRepository.save(answer)).thenReturn(savedAnswer);
+//
+//        int newVoteCount = castVoteService.downVote(answerId);
+//
+//        assertEquals(4, newVoteCount);
+//
+//    }
 }

@@ -1,7 +1,7 @@
 package com.stackoverflow.beta.service;
 
 import com.stackoverflow.beta.model.Question;
-import com.stackoverflow.beta.model.dto.TopQuestionResponse;
+import com.stackoverflow.beta.model.dto.QuestionResponse;
 import com.stackoverflow.beta.model.request.QuestionCreateRequest;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public interface IQuestion {
      * Retrieves the top questions based on the specified criteria.
      *
      * @param limit    the maximum number of top questions to retrieve
-     * @return a list of {@link TopQuestionResponse} containing details of the top questions
+     * @return a list of {@link QuestionResponse} containing details of the top questions
      */
-    TopQuestionResponse findTopQuestions(int limit);
+    QuestionResponse findTopQuestions(int limit);
 }

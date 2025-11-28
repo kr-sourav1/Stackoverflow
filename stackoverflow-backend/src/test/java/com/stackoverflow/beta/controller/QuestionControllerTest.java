@@ -2,7 +2,6 @@ package com.stackoverflow.beta.controller;
 
 import com.stackoverflow.beta.exception.ValidationException;
 import com.stackoverflow.beta.model.Question;
-import com.stackoverflow.beta.model.dto.TopQuestionResponse;
 import com.stackoverflow.beta.model.request.QuestionCreateRequest;
 import com.stackoverflow.beta.service.IQuestion;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

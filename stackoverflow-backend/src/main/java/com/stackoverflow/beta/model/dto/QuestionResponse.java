@@ -13,7 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionResponse {
-    private Question question;
-    private List<AnswerResponse> answers;
-    private List<String> tags;
+    private List<Question> questions;
 }

@@ -35,7 +35,8 @@ public class Question {
     @NotNull
     @Size(min = 5, message = "The content must be at least 5 characters long")
     private String content;
-    private int votes;
+    @Column(nullable = false)
+    private int votes = 0;
     @Column(name = "user_id")
     private int userId;
 

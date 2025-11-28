@@ -24,6 +24,7 @@ export default function AskQuestion() {
         .filter(Boolean),
       // userName: 'anonymous'  // ❌ remove if backend uses JWT to identify user
     };
+    
     const response = await postQuestion(payload);
     if (response.status == 201){
         alert("Question Posted Successfully");

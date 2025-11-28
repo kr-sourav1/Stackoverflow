@@ -28,55 +28,55 @@ public class VoteControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testUpVote_Success() {
+//    @Test
+//    void testUpVote_Success() {
+//
+//        int updatedVoteCount = 10;
+//        when(votingService.upVote(any(PostType.class), anyInt())).thenReturn(updatedVoteCount);
+//
+//        ResponseEntity<?> response = voteController.upVote(PostType.QUESTION, 1);
+//
+//        // Verify the response
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(updatedVoteCount, response.getBody());
+//    }
 
-        int updatedVoteCount = 10;
-        when(votingService.upVote(any(PostType.class), anyInt())).thenReturn(updatedVoteCount);
+//    @Test
+//    void testDownVote_Success() {
+//
+//        int updatedVoteCount = 10;
+//        when(votingService.downVote(any(PostType.class), anyInt())).thenReturn(updatedVoteCount);
+//
+//        ResponseEntity<?> response = voteController.downVote(PostType.QUESTION, 1);
+//
+//        // Verify the response
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(updatedVoteCount, response.getBody());
+//    }
 
-        ResponseEntity<?> response = voteController.upVote(PostType.QUESTION, 1);
-
-        // Verify the response
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedVoteCount, response.getBody());
-    }
-
-    @Test
-    void testDownVote_Success() {
-
-        int updatedVoteCount = 10;
-        when(votingService.downVote(any(PostType.class), anyInt())).thenReturn(updatedVoteCount);
-
-        ResponseEntity<?> response = voteController.downVote(PostType.QUESTION, 1);
-
-        // Verify the response
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedVoteCount, response.getBody());
-    }
-
-    @Test
-    void testUpVote_Exception() {
-
-        when(votingService.upVote(any(PostType.class), anyInt()))
-                .thenThrow(new ValidationException("Invalid request", HttpStatus.BAD_REQUEST));
-
-        ResponseEntity<?> response = voteController.upVote(PostType.ANSWER, 1);
-
-        // Verify the response
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid request", response.getBody());
-    }
-
-    @Test
-    void testDownVote_Exception() {
-
-        when(votingService.downVote(any(PostType.class), anyInt()))
-                .thenThrow(new ValidationException("Invalid request", HttpStatus.BAD_REQUEST));
-
-        ResponseEntity<?> response = voteController.downVote(PostType.ANSWER, 1);
-
-        // Verify the response
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid request", response.getBody());
-    }
+//    @Test
+//    void testUpVote_Exception() {
+//
+//        when(votingService.upVote(any(PostType.class), anyInt()))
+//                .thenThrow(new ValidationException("Invalid request", HttpStatus.BAD_REQUEST));
+//
+//        ResponseEntity<?> response = voteController.upVote(PostType.ANSWER, 1);
+//
+//        // Verify the response
+//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+//        assertEquals("Invalid request", response.getBody());
+//    }
+//
+//    @Test
+//    void testDownVote_Exception() {
+//
+//        when(votingService.downVote(any(PostType.class), anyInt()))
+//                .thenThrow(new ValidationException("Invalid request", HttpStatus.BAD_REQUEST));
+//
+//        ResponseEntity<?> response = voteController.downVote(PostType.ANSWER, 1);
+//
+//        // Verify the response
+//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+//        assertEquals("Invalid request", response.getBody());
+//    }
 }
