@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 //import java.awt.print.Pageable;
 import java.util.*;
@@ -28,6 +29,7 @@ public class QuestionServiceImpl implements IQuestion {
     private final TagServiceImpl tagService;
     private final CustomPriorityQueue voteCache = CustomPriorityQueue.getInstance();
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final StorageService s3Service;
 
     @PostConstruct
     private void initializePriorityQueue() {
@@ -38,16 +40,17 @@ public class QuestionServiceImpl implements IQuestion {
     public QuestionServiceImpl(QuestionRepository questionRepository,
 //                               QuestionTagRepository questionTagRepository,
                                TagServiceImpl tagService,
-                               KafkaTemplate<String, Object> kafkaTemplate) {
+                               KafkaTemplate<String, Object> kafkaTemplate,
+                               StorageService s3Service) {
         this.questionRepository = questionRepository;
 //        this.questionTagRepository = questionTagRepository;
         this.tagService = tagService;
         this.kafkaTemplate = kafkaTemplate;
+        this.s3Service = s3Service;
     }
 
     @Override
     public Question saveQuestion(QuestionCreateRequest questionCreateRequest) {
-        // Fetch the userId from the SecurityContext
         int userId = getUserIdFromSecurityContext()
                 .orElseThrow(() -> new SecurityException("User not authenticated"));
 
@@ -55,15 +58,39 @@ public class QuestionServiceImpl implements IQuestion {
         question.setUserId(userId);
 
         validateQuestionDoesNotExist(questionCreateRequest, userId);
-
         question.setTags(buildTags(questionCreateRequest.getTags()));
+
         Question savedQuestion = questionRepository.save(question);
         log.info("Question successfully saved with ID: {}", savedQuestion.getId());
 
         voteCache.add(savedQuestion);
-
         return savedQuestion;
     }
+
+    // 👇 NEW: same as saveQuestion, but with a file parameter
+    @Override
+    public Question saveQuestionWithMedia(MultipartFile file, QuestionCreateRequest questionCreateRequest) {
+        int userId = getUserIdFromSecurityContext()
+                .orElseThrow(() -> new SecurityException("User not authenticated"));
+
+        Question question = createQuestion(questionCreateRequest);
+        question.setUserId(userId);
+
+        validateQuestionDoesNotExist(questionCreateRequest, userId);
+        question.setTags(buildTags(questionCreateRequest.getTags()));
+
+        if (file != null && !file.isEmpty()) {
+            String mediaUrl = s3Service.uploadFile(file);   // 👈 exactly like AnswerServiceImpl
+            question.setMediaUrl(mediaUrl);
+        }
+
+        Question savedQuestion = questionRepository.save(question);
+        log.info("Question with media successfully saved with ID: {}", savedQuestion.getId());
+
+        voteCache.add(savedQuestion);
+        return savedQuestion;
+    }
+
 
     private Set<Tag> buildTags(List<String> tagNames) {
         Set<Tag> tags = new HashSet<>();

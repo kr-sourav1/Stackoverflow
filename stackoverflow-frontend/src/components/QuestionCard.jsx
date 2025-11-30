@@ -74,14 +74,15 @@ import { Link } from 'react-router-dom';
 import Tag from './Tag';
 import { upVote, downVote } from '../api/api';
 import { getCurrentUserId } from '../auth';
+import { S3_BASE_URL } from '../config/s3';
 
 export default function QuestionCard({ q }) {
   const createdDate = q.createdAt
     ? new Date(q.createdAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
     : 'unknown';
 
   // Local state for votes so UI updates immediately
@@ -95,6 +96,14 @@ export default function QuestionCard({ q }) {
   const rawContent = q?.content ?? q?.body ?? q?.description ?? q?.contentText ?? '';
   const contentStr = typeof rawContent === 'string' ? rawContent : rawContent ? String(rawContent) : '';
   const contentTrimmed = contentStr.trim();
+
+  const mediaUrl =
+    q.mediaUrl?.startsWith('http')
+      ? q.mediaUrl
+      : q.mediaUrl
+        ? `${S3_BASE_URL}${q.mediaUrl}`
+        : null;
+
 
   async function handleUpVote() {
     const userId = getCurrentUserId();
@@ -184,6 +193,24 @@ export default function QuestionCard({ q }) {
           <p className="text-sm text-gray-700 line-clamp-2 mb-3">
             {contentTrimmed ? contentTrimmed.slice(0, 300) : 'No content available'}
           </p>
+
+          {/* Media preview */}
+          {mediaUrl && (
+            <div className="mb-3 flex items-center gap-2">
+              <img
+                src={mediaUrl}
+                alt="attachment"
+                style={{ maxWidth: "15%", height: "auto" }}
+                className="h-16px w-16px object-cover rounded border border-gray-200"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+              {/* <span className="text-xs text-gray-500">
+                This question has an attachment
+              </span> */}
+            </div>
+          )}
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2">

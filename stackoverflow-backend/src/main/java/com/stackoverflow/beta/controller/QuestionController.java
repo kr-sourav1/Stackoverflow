@@ -8,9 +8,12 @@ import com.stackoverflow.beta.service.IQuestion;
 import com.stackoverflow.beta.utils.ExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,17 +31,30 @@ public class QuestionController {
     }
 
     /**
-     * Endpoint for posting a new question.
-     *
-     * @param questionCreateRequest the question request to post
-     * @return the saved Question entity
+     * Endpoint for posting a new question (with optional media file).
      */
-    @PostMapping("/post")
-    public ResponseEntity<?> postQuestion(@RequestBody QuestionCreateRequest questionCreateRequest) {
+    @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> postQuestion(
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam(value = "tags", required = false) List<String> tags
+    ) {
         try {
-            return new ResponseEntity<>(questionService.saveQuestion(questionCreateRequest), HttpStatus.CREATED);
-        }
-        catch (Exception e) {
+            QuestionCreateRequest questionCreateRequest = new QuestionCreateRequest();
+            questionCreateRequest.setTitle(title);
+            questionCreateRequest.setContent(content);
+            questionCreateRequest.setTags(tags != null ? tags : List.of());
+
+            Question saved;
+            if (file != null && !file.isEmpty()) {
+                saved = questionService.saveQuestionWithMedia(file, questionCreateRequest);
+            } else {
+                saved = questionService.saveQuestion(questionCreateRequest);
+            }
+
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
             return ExceptionHandler.handleException(e);
         }
     }

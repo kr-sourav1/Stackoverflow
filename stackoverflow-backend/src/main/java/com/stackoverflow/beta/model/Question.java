@@ -62,6 +62,10 @@ public class Question {
     )
     private Set<Tag> tags;
 
+    // 👇 NEW: same idea as Answer.mediaUrl
+    @Column(name = "media_url")
+    private String mediaUrl;
+
     /**
      * check for lock
      */

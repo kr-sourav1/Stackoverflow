@@ -203,6 +203,7 @@ export default function AnswerCard({ a, onAddComment }) {
               <img
                 src={imageUrl}
                 alt="answer attachment"
+                style={{ maxWidth: "15%", height: "auto" }}
                 className="max-h-64 rounded border border-gray-200"
               />
             </div>

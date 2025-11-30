@@ -102,16 +102,31 @@ export async function signup(credentials) {
   }
 }
 
-export async function postQuestion(question) {
+export async function postQuestion({ title, content, tags, file }) {
   try {
     console.log('Calling:', api.defaults.baseURL + '/question/post');
-    const response = await api.post('/question/post', question);
-    return response;                            // you check response.status in AskQuestion
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+
+    // tags can be an array of strings
+    if (Array.isArray(tags)) {
+      tags.forEach((t) => formData.append('tags', t));
+    }
+
+    if (file) {
+      formData.append('file', file);
+    }
+
+    const response = await api.post('/question/post', formData);
+    return response;
   } catch (error) {
     console.error('post question error:', error);
     return error;
   }
 }
+
 
 export async function getQuestionById(id) {
   try {

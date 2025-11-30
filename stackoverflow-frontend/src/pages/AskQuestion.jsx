@@ -1,13 +1,12 @@
-
-// AskQuestion.jsx
-import React, { useState, useEffect } from 'react';
-import { api, postQuestion } from '../api/api';
+import React, { useState } from 'react';
+import { postQuestion } from '../api/api';
 import { useNavigate } from 'react-router-dom';
 
 export default function AskQuestion() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
+  const [file, setFile] = useState(null);        // 👈 NEW
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -15,23 +14,25 @@ export default function AskQuestion() {
     e.preventDefault();
     setError('');
 
-    const payload = {
+    const tagsArray = tags
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const response = await postQuestion({
       title,
       content,
-      tags: tags
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean),
-      // userName: 'anonymous'  // ❌ remove if backend uses JWT to identify user
-    };
-    
-    const response = await postQuestion(payload);
-    if (response.status == 201){
-        alert("Question Posted Successfully");
-        navigate('/');
-    }
-    else if(response.code == "ERR_BAD_REQUEST" && response.response?.data){
-        alert(response.response.data.message)
+      tags: tagsArray,
+      file,                                      // 👈 pass file
+    });
+
+    if (response?.status === 201) {
+      alert('Question Posted Successfully');
+      navigate('/');
+    } else if (response?.code === 'ERR_BAD_REQUEST' && response.response?.data) {
+      alert(response.response.data.message);
+    } else {
+      setError('Failed to post question');
     }
   }
 
@@ -83,11 +84,27 @@ export default function AskQuestion() {
           />
         </div>
 
+        {/* 👇 NEW: media upload */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Attach media (optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*,video/*"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="text-sm"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            You can attach screenshots or small clips to clarify your question.
+          </p>
+        </div>
+
         <div>
           <button
             type="submit"
-            style={{ backgroundColor: "#0095FF" }}
-            className="px-4 py-2 bg-indigo-600 text-white rounded" 
+            style={{ backgroundColor: '#0095FF' }}
+            className="px-4 py-2 bg-indigo-600 text-white rounded"
           >
             Post Your Question
           </button>

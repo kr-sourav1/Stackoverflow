@@ -8,7 +8,8 @@ function useQuery(){
 }
 
 export default function Home(){
-	const [questions, setQuestions] = useState([])
+	// const [questions, setQuestions] = useState([])
+	const [questions, setQuestions] = useState({ questions: [] });
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const q = useQuery()

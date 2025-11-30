@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getQuestionById, postAnswer, postComment } from '../api/api';
 import AnswerCard from '../components/AnswerCard';
 import Tag from '../components/Tag';
+import { S3_BASE_URL } from '../config/s3';
 
 
 export default function QuestionDetails() {
@@ -22,7 +23,8 @@ export default function QuestionDetails() {
             setError(null);
 
             try {
-                const data = await getQuestionById(id);      // calls /question/findById/{id} in api.js
+                const data = await getQuestionById(id);
+                console.log('API question.mediaUrl = ', data.mediaUrl);
 
                 if (!data) {
                     throw new Error('No question found');
@@ -39,6 +41,13 @@ export default function QuestionDetails() {
 
         loadQuestion();
     }, [id]);
+
+    const mediaUrl =
+        question?.mediaUrl?.startsWith("http")
+            ? question.mediaUrl
+            : question?.mediaUrl
+                ? `${S3_BASE_URL}${question.mediaUrl}`
+                : null;
 
     // ✅ Submit answer
     async function submitAnswer(e) {
@@ -81,7 +90,7 @@ export default function QuestionDetails() {
     if (loading) return <div className="p-4">Loading...</div>;
     if (error) return <div className="p-4 text-red-600">{error}</div>;
     if (!question) return <div className="p-4">Question not found</div>;
-    
+
     return (
         <div className="space-y-4">
             <div className="bg-white p-4 rounded shadow-sm">
@@ -91,6 +100,27 @@ export default function QuestionDetails() {
                     className="mt-2 prose"
                     dangerouslySetInnerHTML={{ __html: question.content }}
                 />
+
+                {/* media url */}
+                {mediaUrl && (
+                    <div className="mt-4">
+                        <img
+                            src={mediaUrl}
+                            alt="Question attachment"
+                            className="max-h-24 rounded border object-contain"
+                            style={{ maxWidth: "50%", height: "auto" }}
+                        />
+
+                        <a
+                            href={mediaUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs text-blue-600 hover:underline"
+                        >
+                            Open attachment in new tab
+                        </a>
+                    </div>
+                )}
 
                 <div className="mt-3 flex gap-2 flex-wrap">
                     {(question.tags || []).map((t) => (

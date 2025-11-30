@@ -44,7 +44,7 @@ export default function Signup() {
                 <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full border p-2 rounded" />
                 <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="w-full border p-2 rounded" />
                 <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Password" className="w-full border p-2 rounded" />
-                <div className="flex justify-end">
+                <div className="flex justify-center">
                     <button className="px-4 py-2 bg-indigo-600 text-white rounded">Sign up</button>
                 </div>
             </form>

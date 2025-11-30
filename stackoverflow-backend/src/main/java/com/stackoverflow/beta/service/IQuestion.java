@@ -3,6 +3,7 @@ package com.stackoverflow.beta.service;
 import com.stackoverflow.beta.model.Question;
 import com.stackoverflow.beta.model.dto.QuestionResponse;
 import com.stackoverflow.beta.model.request.QuestionCreateRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,9 @@ public interface IQuestion {
      * @return the saved {@link Question} entity
      */
     Question saveQuestion(QuestionCreateRequest input);
+
+    // 👇 NEW: save question with an optional media file
+    Question saveQuestionWithMedia(MultipartFile file, QuestionCreateRequest input);
 
     /**
      * Retrieves all questions associated with a specific tag.
