@@ -162,28 +162,20 @@ export async function postComment({ answerId, comment }) {
   return res.data; // created Comment object
 }
 
-// Vote APIs
 export async function upVote(postType, postId, userId) {
   const res = await api.post('/vote/upVote', null, {
-    params: {
-      postType, // "QUESTION" or "ANSWER"
-      postId,
-      userId,
-    },
+    params: { postType, postId, userId }
   });
-  return res.data; // updated vote count (int)
+  return res.data;     // { votes, myVote }
 }
 
 export async function downVote(postType, postId, userId) {
   const res = await api.post('/vote/downVote', null, {
-    params: {
-      postType, // "QUESTION" or "ANSWER"
-      postId,
-      userId,
-    },
+    params: { postType, postId, userId }
   });
-  return res.data; // updated vote count (int)
+  return res.data;     // { votes, myVote }
 }
+
 
 
 // Default export in case you want direct access to the Axios instance

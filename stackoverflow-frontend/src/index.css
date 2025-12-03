@@ -1,78 +1,71 @@
-/* ...existing code... */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 entrypoint */
+@import "tailwindcss";
 
-/* global helpers */
-html, body, #root {
-  height: 100%;
-  margin: 0;
+/* ---------------------------
+   Design tokens (Tailwind v4)
+   --------------------------- */
+@theme {
+  /* Typography */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+
+  /* Brand */
+  --color-brand-50: #f4f7ff;
+  --color-brand-100: #e4ebff;
+  --color-brand-200: #c7d4ff;
+  --color-brand-300: #9fb3ff;
+  --color-brand-400: #7490ff;
+  --color-brand-500: #4f6bff;
+  --color-brand-600: #394fe0;
+  --color-brand-700: #2838b0;
+  --color-brand-800: #1f2b83;
+  --color-brand-900: #192366;
+
+  /* Neutral “ink” colors */
+  --color-ink-50: #f9fafb;
+  --color-ink-100: #f3f4f6;
+  --color-ink-200: #e5e7eb;
+  --color-ink-300: #d1d5db;
+  --color-ink-400: #9ca3af;
+  --color-ink-500: #6b7280;
+  --color-ink-600: #4b5563;
+  --color-ink-700: #374151;
+  --color-ink-800: #1f2933;
+  --color-ink-900: #020617;
+
+  /* Surfaces */
+  --color-surface: #020617;          /* bg-surface */
+  --color-surface-subtle: #020617;   /* bg-surface-subtle */
+  --color-surface-elevated: #0b1220; /* bg-surface-elevated */
+
+  /* Borders */
+  --color-border-subtle: rgba(148, 163, 184, 0.35);
+  --color-border-strong: rgba(148, 163, 184, 0.65);
+
+  /* Accents */
+  --color-accent-blue: #38bdf8;
+  --color-accent-amber: #f59e0b;
+  --color-accent-red: #ef4444;
+  --color-accent-green: #22c55e;
 }
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* ---------------
+   Base styles only
+   --------------- */
+@layer base {
+  * {
+    @apply border-border-subtle;
   }
-  a:hover {
-    color: #747bff;
+
+  body {
+    @apply min-h-screen bg-surface text-ink-50 antialiased font-sans;
   }
-  button {
-    background-color: #f9f9f9;
+
+  ::selection {
+    @apply bg-brand-500/30 text-ink-50;
+  }
+
+  a {
+    @apply text-accent-blue hover:text-accent-blue/80 transition-colors;
   }
 }
-/* ...existing code... */

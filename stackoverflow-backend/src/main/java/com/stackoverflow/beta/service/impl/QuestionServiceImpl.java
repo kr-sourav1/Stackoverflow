@@ -1,11 +1,15 @@
 package com.stackoverflow.beta.service.impl;
 
+import com.stackoverflow.beta.PostType;
 import com.stackoverflow.beta.exception.ValidationException;
+import com.stackoverflow.beta.model.Answer;
 import com.stackoverflow.beta.model.Question;
 import com.stackoverflow.beta.model.Tag;
+import com.stackoverflow.beta.model.Vote;
 import com.stackoverflow.beta.model.dto.QuestionResponse;
 import com.stackoverflow.beta.model.request.QuestionCreateRequest;
 import com.stackoverflow.beta.repository.QuestionRepository;
+import com.stackoverflow.beta.repository.VoteRepository;
 import com.stackoverflow.beta.service.IQuestion;
 import com.stackoverflow.beta.utils.CustomPriorityQueue;
 import jakarta.annotation.PostConstruct;
@@ -14,9 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 //import java.awt.print.Pageable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.stackoverflow.beta.utils.SecurityUtils.getUserIdFromSecurityContext;
 
@@ -30,6 +34,8 @@ public class QuestionServiceImpl implements IQuestion {
     private final CustomPriorityQueue voteCache = CustomPriorityQueue.getInstance();
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final StorageService s3Service;
+    private final VoteRepository voteRepository;
+
 
     @PostConstruct
     private void initializePriorityQueue() {
@@ -41,12 +47,14 @@ public class QuestionServiceImpl implements IQuestion {
 //                               QuestionTagRepository questionTagRepository,
                                TagServiceImpl tagService,
                                KafkaTemplate<String, Object> kafkaTemplate,
-                               StorageService s3Service) {
+                               StorageService s3Service,
+                               VoteRepository voteRepository) {
         this.questionRepository = questionRepository;
 //        this.questionTagRepository = questionTagRepository;
         this.tagService = tagService;
         this.kafkaTemplate = kafkaTemplate;
         this.s3Service = s3Service;
+        this.voteRepository = voteRepository;
     }
 
     @Override
@@ -125,23 +133,53 @@ public class QuestionServiceImpl implements IQuestion {
     @Override
     public Optional<Question> findQuestionById(int id) {
         log.info("Fetching question with ID: {}", id);
-        return Optional.ofNullable(questionRepository.findById(id)
-                .orElseThrow(() -> new ValidationException("Question not found", HttpStatus.NOT_FOUND)));
+
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new ValidationException("Question not found", HttpStatus.NOT_FOUND));
+
+        // 👇 get current userId from your existing SecurityUtils
+        Integer userId = getUserIdFromSecurityContext().orElse(null);
+
+        // Default: no vote
+        question.setMyVote(0);
+        if (question.getAnswers() != null) {
+            question.getAnswers().forEach(a -> a.setMyVote(0));
+        }
+
+        if (userId != null) {
+            // 1) my vote on the QUESTION
+            int myQuestionVote = voteRepository
+                    .findByUserIdAndPostTypeAndPostId(userId, PostType.QUESTION, question.getId())
+                    .map(Vote::getValue)
+                    .orElse(0);
+            question.setMyVote(myQuestionVote);
+
+            // 2) my votes on ANSWERS
+            if (question.getAnswers() != null && !question.getAnswers().isEmpty()) {
+                var answers = question.getAnswers();
+
+                var answerIds = answers.stream()
+                        .map(Answer::getId)
+                        .toList();
+
+                var votes = voteRepository.findByUserIdAndPostTypeAndPostIdIn(
+                        userId,
+                        PostType.ANSWER,
+                        answerIds
+                );
+
+                Map<Integer, Integer> answerVoteMap = votes.stream()
+                        .collect(Collectors.toMap(Vote::getPostId, Vote::getValue));
+
+                answers.forEach(a ->
+                        a.setMyVote(answerVoteMap.getOrDefault(a.getId(), 0))
+                );
+            }
+        }
+
+        return Optional.of(question);
     }
 
-    //    public List<TopQuestionResponse> findTopQuestions(int count) {
-//        log.info("Fetching top {} questions based on criteria votes", count);
-//        List<Question> topQuestions = new ArrayList<>(voteCache);
-//
-//        return topQuestions.stream()
-//                .sorted((question1, question2) -> question2.getVotes() - question1.getVotes())
-//                .limit(count)
-//                .map(question -> new TopQuestionResponse(
-//                        question.getTitle(),
-//                        question.getVotes(),
-//                        question.getUserId()))
-//                .toList();
-//    }
 
     @Override
     public QuestionResponse findTopQuestions(int limit) {

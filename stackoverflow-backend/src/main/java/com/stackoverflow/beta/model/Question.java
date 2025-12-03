@@ -37,6 +37,10 @@ public class Question {
     private String content;
     @Column(nullable = false)
     private int votes = 0;
+
+    @Transient
+    private Integer myVote;
+
     @Column(name = "user_id")
     private int userId;
 
@@ -77,7 +81,13 @@ public class Question {
         this.votes = this.votes - 1;
     }
 
+    public Integer getMyVote() {
+        return myVote;
+    }
 
+    public void setMyVote(Integer myVote) {
+        this.myVote = myVote;
+    }
     public Question(String title, String content, User askedBy) {
         this.title = title;
         this.content = content;

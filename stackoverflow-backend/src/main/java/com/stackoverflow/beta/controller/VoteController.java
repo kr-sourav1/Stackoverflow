@@ -3,6 +3,7 @@ package com.stackoverflow.beta.controller;
 
 import com.stackoverflow.beta.PostType;
 import com.stackoverflow.beta.exception.ValidationException;
+import com.stackoverflow.beta.model.dto.VoteResponse;
 import com.stackoverflow.beta.service.impl.VoteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,12 @@ public class VoteController {
                                     @RequestParam int postId,
                                     @RequestParam int userId) {
         try {
-            int updatedVotes = votingService.upVote(postType, postId, userId);
-            return new ResponseEntity<>(updatedVotes, HttpStatus.OK);
+            VoteResponse voteResponse = votingService.upVote(postType, postId, userId);
+            return new ResponseEntity<>(voteResponse, HttpStatus.OK);
         } catch (ValidationException e) {
             return ResponseEntity.status(e.getStatus()).body(e.getMessage());
         } catch (Exception e) {
+            log.error("Error in upVote", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -48,11 +50,12 @@ public class VoteController {
                                       @RequestParam int postId,
                                       @RequestParam int userId) {
         try {
-            int updatedVotes = votingService.downVote(postType, postId, userId);
-            return new ResponseEntity<>(updatedVotes, HttpStatus.OK);
+            VoteResponse voteResponse = votingService.downVote(postType, postId, userId);
+            return new ResponseEntity<>(voteResponse, HttpStatus.OK);
         } catch (ValidationException e) {
             return ResponseEntity.status(e.getStatus()).body(e.getMessage());
         } catch (Exception e) {
+            log.error("Error in downVote", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -1,15 +1,16 @@
-import React from 'react';
+// src/components/CommentCard.jsx
+import React from "react";
 
 export default function CommentCard({ comment }) {
-  const authorName = comment.user?.name || 'anonymous';
+  const authorName = comment.user?.name || "anonymous";
 
   return (
-    <div className="text-xs text-gray-700 flex py-1 border-b border-gray-100 last:border-b-0">
-      <p className="flex-1">
-        {comment.text}{' '}
-        <span className="text-[11px] text-gray-500 ml-2">
-          —{' '}
-          <span className="text-blue-600 hover:text-blue-800 cursor-pointer">
+    <div className="flex items-start gap-2 py-1.5 text-xs">
+      <p className="flex-1 text-[0.78rem] leading-snug text-ink-200">
+        {comment.text}
+        <span className="ml-2 text-[0.7rem] text-ink-500">
+          —{" "}
+          <span className="font-medium text-brand-300 hover:text-brand-200 cursor-pointer">
             {authorName}
           </span>
         </span>

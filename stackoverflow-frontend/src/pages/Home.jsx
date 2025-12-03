@@ -1,102 +1,132 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { api, getTopQuestions, globalSearch } from '../api/api'
-import QuestionCard from '../components/QuestionCard'
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { api, getTopQuestions, globalSearch } from "../api/api";
+import QuestionCard from "../components/QuestionCard";
 
-function useQuery(){
-	return new URLSearchParams(useLocation().search)
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
 }
 
-export default function Home(){
-	// const [questions, setQuestions] = useState([])
-	const [questions, setQuestions] = useState({ questions: [] });
-	const [loading, setLoading] = useState(false)
-	const [error, setError] = useState(null)
-	const q = useQuery()
-	const search = q.get('q') || ''
-	const tag = q.get('tag') || ''
+function extractQuestions(data) {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.questions)) return data.questions;
+  return [];
+}
 
-	useEffect(()=>{
-		setLoading(true)
-		setError(null)
+export default function Home() {
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-		console.log('Home effect run, search=', search, 'tag=', tag)
+  const q = useQuery();
+  const search = q.get("q") || "";
+  const tag = q.get("tag") || "";
 
-		// If there is a search query, call the global search endpoint (9090 service)
-		if (search) {
-			globalSearch(search)
-				.then(res => {
-					console.log('globalSearch response:', res && res.data)
-					setQuestions(res.data)
-				})
-				.catch(err => {
-					console.error(err)
-					setError('Failed to load search results')
-				})
-				.finally(()=> setLoading(false))
-			return
-		}
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
 
-		// If there is a tag filter (but no free-text search), use the existing /questions endpoint
-		if (tag) {
-			const params = { tag }
-			api.get('/questions', { params })
-				.then(res => setQuestions(res.data))
-				.catch(err => {
-					console.error(err)
-					setError('Failed to load questions')
-				})
-				.finally(()=> setLoading(false))
-			return
-		}
+    console.log("Home effect run, search=", search, "tag=", tag);
 
-		// Otherwise fetch top questions from the provided endpoint
-		getTopQuestions(10)
-			.then(res => setQuestions(res.data))
-			.catch(err => {
-				console.error(err)
-				setError('Failed to load top questions')
-			})
-			.finally(()=> setLoading(false))
-	}, [search, tag])
+    // 1) Text search → globalSearch
+    if (search) {
+      globalSearch(search)
+        .then((res) => {
+          console.log("globalSearch response:", res && res.data);
+          setQuestions(extractQuestions(res?.data));
+        })
+        .catch((err) => {
+          console.error(err);
+          setError("Failed to load search results");
+        })
+        .finally(() => setLoading(false));
+      return;
+    }
 
-	return (
-		<div className="w-full">
-			<div className="flex items-center justify-between mb-8">
-				<div>
-					<h1 className="text-3xl font-bold text-gray-900 mb-1">Top Questions</h1>
-					<p className="text-gray-600">Browse and search questions from the community</p>
-				</div>
-				{tag && (
-					<div className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-md text-sm font-medium text-blue-700">
-						Filtered by: <span className="font-semibold">{tag}</span>
-					</div>
-				)}
-			</div>
+    // 2) Tag filter
+    if (tag) {
+      const params = { tag };
+      api
+        .get("/questions", { params })
+        .then((res) => setQuestions(extractQuestions(res?.data)))
+        .catch((err) => {
+          console.error(err);
+          setError("Failed to load questions");
+        })
+        .finally(() => setLoading(false));
+      return;
+    }
 
-			{loading ? (
-				<div className="text-center py-12">
-					<div className="text-gray-600">Loading questions...</div>
-				</div>
-			) : error ? (
-				<div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md mb-4">
-					{error}
-				</div>
-			) : (
-				<div className="w-full">
-					{
-					questions.length === 0 ? (
-						<div className="text-center py-12 text-gray-600">
-							<p className="text-lg font-medium mb-2">No questions found</p>
-							<p className="text-sm">Try a different search or browse all questions</p>
-						</div>
-					) : (
-						<div className="space-y-3">
-							{questions.questions.map(item => <QuestionCard key={item.id} q={item} />)}
-						</div>
-					)}
-				</div>
-			)}
-		</div>
-	)
+    // 3) Default → top questions
+    getTopQuestions(10)
+      .then((res) => setQuestions(extractQuestions(res?.data)))
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load top questions");
+      })
+      .finally(() => setLoading(false));
+  }, [search, tag]);
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      {/* Header / filters */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-500">
+            Q&amp;A workspace
+          </p>
+          <h1 className="mt-1 text-3xl font-semibold text-ink-50">
+            {search
+              ? "Search results"
+              : tag
+              ? `Questions tagged “${tag}”`
+              : "Top questions"}
+          </h1>
+          <p className="mt-2 text-sm text-ink-400">
+            {search
+              ? `Showing questions matching “${search}”.`
+              : "Live questions from your engineering teams."}
+          </p>
+        </div>
+
+        {(tag || search) && (
+          <div className="inline-flex items-center gap-2 rounded-full border border-border-subtle/80 bg-surface-elevated/60 px-4 py-2 text-xs text-ink-300">
+            <span className="rounded-full bg-brand-500/15 px-2 py-0.5 text-[11px] font-medium text-brand-200">
+              {search ? "Search" : "Tag filter"}
+            </span>
+            <span className="truncate">
+              {search ? `“${search}”` : `tag: ${tag}`}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      {loading ? (
+        <div className="py-12 text-center text-sm text-ink-400">
+          Loading questions…
+        </div>
+      ) : error ? (
+        <div className="mb-4 rounded-md border border-accent-red/50 bg-accent-red/10 px-4 py-3 text-sm text-accent-red">
+          {error}
+        </div>
+      ) : questions.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="mb-2 text-lg font-medium text-ink-50">
+            No questions found
+          </p>
+          <p className="text-sm text-ink-400">
+            Try a different search term or remove filters.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {questions.map((item) => (
+            <QuestionCard key={item.id} q={item} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }

@@ -23,6 +23,9 @@ public class Answer {
     @Column(nullable = false)
     private int votes = 0;
 
+    @Transient
+    private Integer myVote;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "questionId")
@@ -53,5 +56,12 @@ public class Answer {
 
     public void downVote() {
         this.votes = this.votes - 1;
+    }
+    public Integer getMyVote() {
+        return myVote;
+    }
+
+    public void setMyVote(Integer myVote) {
+        this.myVote = myVote;
     }
 }
